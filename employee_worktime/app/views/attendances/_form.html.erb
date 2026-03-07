@@ -1,0 +1,17 @@
+<%= form_with(model: [@employee, @attendance]) do |f| %>
+
+  <div>
+    <%= f.label :check_in %>
+    <%= f.datetime_local_field :check_in %>
+  </div>
+
+  <div>
+    <%= f.label :check_out %>
+    <%= f.datetime_local_field :check_out %>
+  </div>
+
+  <div>
+    <%= f.submit "Save Attendance" %>
+  </div>
+
+<% end %>

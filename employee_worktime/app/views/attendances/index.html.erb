@@ -1,0 +1,84 @@
+<div class="max-w-5xl mx-auto p-6">
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Attendances - <%= @employee.name %></h1>
+
+    <%= link_to "New Attendance",
+        new_employee_attendance_path(@employee),
+        class: "bg-blue-600 text-white px-4 py-2 rounded" %>
+  </div>
+
+  <div style="width: 100%; max-width: 900px;">
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+
+      <thead>
+        <tr style="background-color: #f3f4f6;">
+          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Check In</th>
+          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Check Out</th>
+          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Work Hours</th>
+          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">OT Hours</th>
+          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% if @attendances.any? %>
+          <% @attendances.order(check_in: :desc).each do |attendance| %>
+            <tr>
+
+              <td style="padding: 12px; border: 1px solid #ddd;">
+                <%= attendance.check_in&.strftime("%d/%m/%Y %H:%M") %>
+              </td>
+
+              <td style="padding: 12px; border: 1px solid #ddd;">
+                <%= attendance.check_out&.strftime("%d/%m/%Y %H:%M") %>
+              </td>
+
+              <td style="padding: 12px; border: 1px solid #ddd;">
+                <%= attendance.work_hours %> hours
+              </td>
+
+              <td style="padding: 12px; border: 1px solid #ddd;">
+                <%= attendance.ot_hours %> hours
+              </td>
+
+              <td style="padding: 12px; border: 1px solid #ddd;">
+
+                <%= link_to "Show",
+                    employee_attendance_path(@employee, attendance),
+                    style: "color: #2563eb; text-decoration: none; margin-right: 10px;" %>
+
+                <%= link_to "Edit",
+                    edit_employee_attendance_path(@employee, attendance),
+                    style: "color: #d97706; text-decoration: none; margin-right: 10px;" %>
+
+                <%= link_to "Delete",
+                    employee_attendance_path(@employee, attendance),
+                    data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                    style: "color: #dc2626; text-decoration: none;" %>
+
+              </td>
+
+            </tr>
+          <% end %>
+        <% else %>
+
+          <tr>
+            <td colspan="5" style="padding: 16px; border: 1px solid #ddd; text-align: center; color: #6b7280;">
+              No attendance records yet
+            </td>
+          </tr>
+
+        <% end %>
+      </tbody>
+
+    </table>
+  </div>
+
+  <div class="mt-4">
+    <%= link_to "Back to Employee",
+        employee_path(@employee),
+        class: "text-gray-700 underline" %>
+  </div>
+
+</div>

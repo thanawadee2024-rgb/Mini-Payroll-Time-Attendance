@@ -1,0 +1,80 @@
+<p style="color: green"><%= notice %></p>
+
+<h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">
+  Payroll Summary
+</h1>
+
+<div style="width: 600px; margin-bottom: 20px;">
+  <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+    <thead>
+      <tr style="background-color: #f3f4f6;">
+        <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Item</th>
+        <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Value</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">Name</td>
+        <td style="padding: 12px; border: 1px solid #ddd;"><%= @employee.name %></td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">Position</td>
+        <td style="padding: 12px; border: 1px solid #ddd;"><%= @employee.position %></td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">Base Salary</td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= number_to_currency(@employee.base_salary, unit: "฿", format: "%n %u") %>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">Work Days</td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= @employee.work_days %> days
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">OT Hours</td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= @employee.total_ot_hours %> hours
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">OT Pay</td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= number_to_currency(@employee.ot_pay, unit: "฿", format: "%n %u") %>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;">Tax</td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= number_to_currency(@employee.tax, unit: "฿", format: "%n %u") %>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">Net Pay</td>
+        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">
+          <%= number_to_currency(@employee.net_pay, unit: "฿", format: "%n %u") %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div style="margin-top: 20px; display: flex; gap: 10px;">
+  <%= link_to "Edit Employee",
+      edit_employee_path(@employee),
+      style: "padding: 10px 16px; background: #f59e0b; color: white; text-decoration: none; border-radius: 8px;" %>
+
+  <%= link_to "Back to Employees",
+      employees_path,
+      style: "padding: 10px 16px; background: #6b7280; color: white; text-decoration: none; border-radius: 8px;" %>
+</div>

@@ -1,0 +1,14 @@
+<div class="max-w-3xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Attendance Detail</h1>
+
+  <p><strong>Employee:</strong> <%= @employee.name %></p>
+  <p><strong>Check in:</strong> <%= @attendance.check_in %></p>
+  <p><strong>Check out:</strong> <%= @attendance.check_out %></p>
+  <p><strong>Work Hours:</strong> <%= @attendance.work_hours %></p>
+  <p><strong>OT Hours:</strong> <%= @attendance.ot_hours %></p>
+
+  <div class="mt-4 space-x-3">
+    <%= link_to "Edit", edit_employee_attendance_path(@employee, @attendance), class: "text-yellow-600" %>
+    <%= link_to "Back", employee_attendances_path(@employee), class: "text-blue-600" %>
+  </div>
+</div>

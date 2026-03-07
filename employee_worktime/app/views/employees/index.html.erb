@@ -1,0 +1,36 @@
+<p style="color: green"><%= notice %></p>
+
+<h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">Employee</h1>
+
+<div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+  <%= link_to "New Employee", new_employee_path, 
+      style: "padding: 10px 16px; background: #16a34a; color: white; text-decoration: none; border-radius: 8px; font-weight: 500;" %>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+  <thead>
+    <tr style="background-color: #f3f4f6;">
+      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Name</th>
+      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Position</th>
+      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Base Salary</th>
+      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
+      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @employees.each do |employee| %>
+      <tr>
+        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.name %></td>
+        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.position %></td>
+        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.base_salary %></td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= link_to "Information", employee_path(employee), style: "color: #2563eb; text-decoration: none; font-weight: 500;" %>
+        </td>
+        <td style="padding: 12px; border: 1px solid #ddd;">
+          <%= link_to "View Attendances", employee_attendances_path(employee), style: "color: #2563eb; text-decoration: none; font-weight: 500;" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
