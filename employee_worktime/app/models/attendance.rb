@@ -33,6 +33,7 @@ class Attendance < ApplicationRecord
 
   def ot_hours
     ot = [work_hours - 8, 0].max
-    ot.is_a?(Float) ? ot.round(2) : ot
+    result = ot.to_d.round(2)
+    result.to_f == result.to_i ? result.to_i : result.to_f
   end
 end
