@@ -20,7 +20,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_07_075401) do
     t.datetime "created_at", null: false
     t.bigint "employee_id", null: false
     t.datetime "updated_at", null: false
-    t.index [ "employee_id" ], name: "index_attendances_on_employee_id"
+    t.index ["employee_id"], name: "index_attendances_on_employee_id"
   end
 
   create_table "employees", force: :cascade do |t|

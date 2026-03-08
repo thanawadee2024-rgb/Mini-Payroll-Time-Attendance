@@ -1,11 +1,16 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  position: MyString
-  base_salary: 9.99
+john_doe:
+  name: John Doe
+  position: Software Engineer
+  base_salary: 30000.00
 
-two:
-  name: MyString
-  position: MyString
-  base_salary: 9.99
+jane_smith:
+  name: Jane Smith
+  position: Project Manager
+  base_salary: 50000.00
+
+bob_wilson:
+  name: Bob Wilson
+  position: Designer
+  base_salary: 25000.00
+
