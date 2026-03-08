@@ -143,7 +143,7 @@
 <div class="att-wrap">
 <div class="att-page">
 
-  <%= link_to employee_path(@employee), class: "att-back" do %>← Back to Employee<% end %>
+  <%= link_to employees_path, class: "att-back" do %>← Back to Employees<% end %>
 
   <div class="att-header">
     <div class="att-header-left">
@@ -157,8 +157,8 @@
 
   <%# Stats strip %>
   <% total  = @attendances.size %>
-  <% avg_wh = total > 0 ? (@attendances.sum(&:work_hours).to_f / total).round(1) : 0 %>
-  <% tot_ot = @attendances.sum(&:ot_hours) %>
+  <% avg_wh = total > 0 ? (@attendances.sum(&:work_hours).to_f / total).round(2) : 0.00 %>
+  <% tot_ot = @attendances.sum(&:ot_hours).round(2) %>
   <div class="att-stats">
     <div class="att-stat">
       <div class="att-stat-label">Total Records</div>
@@ -167,12 +167,12 @@
     </div>
     <div class="att-stat">
       <div class="att-stat-label">Avg Work Hours</div>
-      <div class="att-stat-val" style="color:var(--blue);"><%= avg_wh %></div>
+      <div class="att-stat-val" style="color:var(--blue);"><%= sprintf("%.2f", avg_wh) %></div>
       <div class="att-stat-sub">hours / day</div>
     </div>
     <div class="att-stat">
       <div class="att-stat-label">Total OT Hours</div>
-      <div class="att-stat-val" style="color:var(--orange);"><%= tot_ot %></div>
+      <div class="att-stat-val" style="color:var(--orange);"><%= sprintf("%.2f", tot_ot) %></div>
       <div class="att-stat-sub">cumulative</div>
     </div>
   </div>
@@ -207,14 +207,14 @@
               </td>
               <td>
                 <div class="hr-cell work">
-                  <span class="hr-num"><%= attendance.work_hours %></span>
+                  <span class="hr-num"><%= sprintf("%.2f", attendance.work_hours) %></span>
                   <span class="hr-unit">hrs</span>
                 </div>
               </td>
               <td>
                 <% ot_val = attendance.ot_hours.to_f %>
                 <div class="hr-cell <%= ot_val > 0 ? 'ot' : 'ot-zero' %>">
-                  <span class="hr-num"><%= attendance.ot_hours %></span>
+                  <span class="hr-num"><%= sprintf("%.2f", attendance.ot_hours) %></span>
                   <span class="hr-unit">hrs</span>
                 </div>
               </td>
@@ -242,10 +242,5 @@
       </tbody>
     </table>
   </div>
-
-  <div class="att-footer">
-    <%= link_to employee_path(@employee), class: "att-btn-back" do %>← Back to Employee<% end %>
-  </div>
-
 </div>
 </div>

@@ -72,7 +72,7 @@
 <div class="as-wrap">
 <div class="as-page">
 
-  <%= link_to employee_attendances_path(@employee), class: "as-back" do %>← Back to Attendances<% end %>
+  <%= link_to employees_path, class: "as-back" do %>← Back to Employees<% end %>
 
   <div class="as-eyebrow"><span class="dot"></span>Attendance Records</div>
   <h1 class="as-title">Attendance Detail</h1>
@@ -106,8 +106,7 @@
       <div class="as-row">
         <span class="as-row-label">Work Hours</span>
         <div class="as-hr blue">
-
-          <span class="num"><%= @attendance.work_hours %></span>
+          <span class="num"><%= sprintf("%.2f", @attendance.work_hours) %></span>
           <span class="unit">hrs</span>
         </div>
       </div>
@@ -116,7 +115,7 @@
         <span class="as-row-label">OT Hours</span>
         <% ot = @attendance.ot_hours.to_f %>
         <div class="as-hr <%= ot > 0 ? 'amber' : '' %>">
-          <span class="num" style="color:<%= ot > 0 ? 'var(--amber)' : 'var(--muted)' %>"><%= @attendance.ot_hours %></span>
+          <span class="num" style="color:<%= ot > 0 ? 'var(--amber)' : 'var(--muted)' %>"><%= sprintf("%.2f", @attendance.ot_hours) %></span>
           <span class="unit">hrs</span>
         </div>
       </div>
@@ -126,7 +125,7 @@
 
   <div class="as-actions">
     <%= link_to "✏️  Edit", edit_employee_attendance_path(@employee, @attendance), class: "as-btn as-btn-edit" %>
-    <%= link_to "← Back", employee_attendances_path(@employee), class: "as-btn as-btn-back" %>
+    <%= link_to "← Back", employees_path, class: "as-btn as-btn-back" %>
   </div>
 
 </div>

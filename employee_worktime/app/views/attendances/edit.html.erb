@@ -61,7 +61,7 @@
 <div class="na-wrap">
 <div class="na-page">
 
-  <%= link_to employee_attendances_path(@employee), class: "na-back" do %>← Back to Attendances<% end %>
+  <%= link_to employees_path, class: "na-back" do %>← Back to Employees<% end %>
 
   <div class="na-eyebrow"><span class="dot"></span>Attendance Records</div>
   <h1 class="na-title">Edit Attendance <span>/ <%= @employee.name %></span></h1>
@@ -99,7 +99,7 @@
             <%= form.datetime_local_field :check_out %>
           </div>
           <div class="af-actions">
-            <%= link_to "Cancel", employee_attendances_path(@employee), class: "af-btn af-btn-cancel" %>
+            <%= link_to "Cancel", employees_path, class: "af-btn af-btn-cancel" %>
             <%= form.submit "Save Changes", class: "af-btn af-btn-save" %>
           </div>
         </div>
