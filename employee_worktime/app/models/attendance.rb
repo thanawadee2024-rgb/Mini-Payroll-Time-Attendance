@@ -26,7 +26,7 @@ class Attendance < ApplicationRecord
   end
 
   def work_hours
-    return 0 if check_in.blank? || check_out.blank?
+    return 0.00 if check_in.blank? || check_out.blank?
 
     ((check_out - check_in) / 3600.0).round(2)
   end

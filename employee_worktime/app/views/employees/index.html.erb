@@ -314,7 +314,9 @@
     <%= form_with url: employees_path, method: :get, local: true do |f| %>
       <div class="search-wrap">
         <%= text_field_tag :search, params[:search], placeholder: "Search employee…" %>
-        <%= submit_tag "Search" %>
+        <button type="submit" style="background:transparent;border:none;padding:10px 14px;cursor:pointer;display:flex;align-items:center;color:var(--muted);transition:color .2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3" stroke-linecap="round"/></svg>
+        </button>
       </div>
     <% end %>
     <%= link_to new_employee_path, class: "btn-new" do %>
@@ -330,7 +332,7 @@
       <div class="icon">🔍</div>
       <h3>No Results Found</h3>
       <p>We couldn't find any employee matching your search.</p>
-      <button onclick="document.getElementById('alertModal').style.display='none'">OK</button>
+      <button onclick="window.location.href='<%= employees_path %>'">OK</button>
     </div>
   </div>
   <script>document.getElementById('alertModal').style.display='flex';</script>
