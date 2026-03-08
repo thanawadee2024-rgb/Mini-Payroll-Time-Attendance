@@ -1,84 +1,251 @@
-<div class="max-w-5xl mx-auto p-6">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Attendances - <%= @employee.name %></h1>
+:root{
+  --bg:#080b10;--panel:#0f1318;--panel2:#141920;
+  --border:#1f2733;--border2:#253040;
+  --accent:#00d4aa;--accent-dim:rgba(0,212,170,.12);
+  --blue:#4f8ef7;--blue-dim:rgba(79,142,247,.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.1);
+  --orange:#fb923c;
+  --text:#dfe6f0;--muted:#576578;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
 
-    <%= link_to "New Attendance",
-        new_employee_attendance_path(@employee),
-        class: "bg-blue-600 text-white px-4 py-2 rounded" %>
+.att-wrap{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;
+  justify-content:center;align-items:flex-start;
+  padding:48px 20px 80px;position:relative;
+}
+.att-wrap::before,.att-wrap::after{
+  content:'';position:fixed;border-radius:50%;
+  filter:blur(130px);pointer-events:none;z-index:0;
+}
+.att-wrap::before{width:520px;height:520px;background:rgba(0,212,170,.05);top:-100px;right:-120px;}
+.att-wrap::after{width:400px;height:400px;background:rgba(79,142,247,.05);bottom:60px;left:-80px;}
+
+.att-page{position:relative;z-index:1;width:100%;max-width:900px;}
+
+.att-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--muted);text-decoration:none;
+  margin-bottom:32px;transition:color .2s;
+  animation:att-fadeDown .4s ease both;
+}
+.att-back:hover{color:var(--text)}
+
+.att-header{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:28px;
+}
+.att-header-left{animation:att-fadeDown .4s .05s ease both;}
+.att-eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.att-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);}
+.att-title{font-size:32px;font-weight:700;color:var(--white);letter-spacing:-.5px;line-height:1.1;}
+.att-title span{color:var(--accent);}
+.att-header-right{animation:att-fadeDown .4s .1s ease both;}
+.att-btn-new{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 20px;background:var(--accent);color:#030f0c;
+  border-radius:11px;font-size:14px;font-weight:700;
+  text-decoration:none;transition:transform .15s,box-shadow .2s;
+  box-shadow:0 4px 16px rgba(0,212,170,.25);
+}
+.att-btn-new:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,212,170,.38)}
+
+/* stats */
+.att-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;
+  margin-bottom:24px;animation:att-fadeUp .5s .12s ease both;
+}
+.att-stat{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;padding:18px 20px;position:relative;overflow:hidden;
+}
+.att-stat::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 60%);
+  pointer-events:none;
+}
+.att-stat-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.att-stat-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;line-height:1;}
+.att-stat-sub{font-size:12px;color:var(--muted);margin-top:4px;}
+
+/* table */
+.att-table-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;animation:att-fadeUp .5s .2s ease both;
+}
+.att-table{width:100%;border-collapse:collapse;}
+.att-table thead tr{background:var(--panel2);border-bottom:1px solid var(--border);}
+.att-table th{
+  padding:13px 18px;font-size:11px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;
+}
+.att-table tbody tr{border-bottom:1px solid var(--border);transition:background .15s;}
+.att-table tbody tr:last-child{border-bottom:none}
+.att-table tbody tr:hover{background:rgba(255,255,255,.022)}
+.att-table td{padding:15px 18px;font-size:14px;color:var(--text);}
+
+.dt-cell{display:flex;flex-direction:column;gap:2px;}
+.dt-date{font-size:13px;font-weight:600;color:var(--text);}
+.dt-time{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+
+.hr-cell{display:inline-flex;align-items:center;gap:7px;}
+.hr-icon{font-size:14px;opacity:.85;}
+.hr-num{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;}
+.hr-unit{font-size:11px;color:var(--muted);}
+.hr-cell.work .hr-num{color:var(--blue);}
+.hr-cell.ot   .hr-num{color:var(--amber);}
+.hr-cell.ot-zero .hr-num,.hr-cell.ot-zero .hr-unit{color:var(--muted);opacity:.5;}
+
+.act-row{display:flex;align-items:center;gap:6px;}
+.act-btn{
+  padding:5px 12px;border-radius:7px;
+  font-size:12px;font-weight:600;text-decoration:none;
+  transition:background .15s;
+}
+.act-show{color:var(--blue);background:var(--blue-dim);}
+.act-show:hover{background:rgba(79,142,247,.22)}
+.act-edit{color:var(--amber);background:var(--amber-dim);}
+.act-edit:hover{background:rgba(245,158,11,.22)}
+.act-del{color:var(--red);background:var(--red-dim);}
+.act-del:hover{background:rgba(248,113,113,.2)}
+
+.att-empty{padding:56px 20px;text-align:center;}
+.att-empty .icon{font-size:42px;margin-bottom:14px;opacity:.5;}
+.att-empty p{font-size:14px;color:var(--muted);}
+
+.att-footer{
+  display:flex;justify-content:flex-start;gap:12px;margin-top:20px;
+  animation:att-fadeUp .5s .3s ease both;
+}
+.att-btn-back{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:11px 20px;background:var(--panel2);color:var(--text);
+  border:1px solid var(--border2);border-radius:11px;
+  font-size:14px;font-weight:600;text-decoration:none;
+  transition:background .15s,transform .15s;
+}
+.att-btn-back:hover{background:var(--border2);transform:translateY(-1px)}
+
+@keyframes att-fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes att-fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<div class="att-wrap">
+<div class="att-page">
+
+  <%= link_to employee_path(@employee), class: "att-back" do %>← Back to Employee<% end %>
+
+  <div class="att-header">
+    <div class="att-header-left">
+      <div class="att-eyebrow"><span class="dot"></span>Attendance Records</div>
+      <h1 class="att-title"><%= @employee.name.split.first %> <span><%= @employee.name.split[1..].join(' ') %></span></h1>
+    </div>
+    <div class="att-header-right">
+      <%= link_to new_employee_attendance_path(@employee), class: "att-btn-new" do %>＋ New Attendance<% end %>
+    </div>
   </div>
 
-  <div style="width: 100%; max-width: 900px;">
-    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+  <%# Stats strip %>
+  <% total  = @attendances.size %>
+  <% avg_wh = total > 0 ? (@attendances.sum(&:work_hours).to_f / total).round(1) : 0 %>
+  <% tot_ot = @attendances.sum(&:ot_hours) %>
+  <div class="att-stats">
+    <div class="att-stat">
+      <div class="att-stat-label">Total Records</div>
+      <div class="att-stat-val" style="color:var(--accent);"><%= total %></div>
+      <div class="att-stat-sub">all time</div>
+    </div>
+    <div class="att-stat">
+      <div class="att-stat-label">Avg Work Hours</div>
+      <div class="att-stat-val" style="color:var(--blue);"><%= avg_wh %></div>
+      <div class="att-stat-sub">hours / day</div>
+    </div>
+    <div class="att-stat">
+      <div class="att-stat-label">Total OT Hours</div>
+      <div class="att-stat-val" style="color:var(--orange);"><%= tot_ot %></div>
+      <div class="att-stat-sub">cumulative</div>
+    </div>
+  </div>
 
+  <%# Table %>
+  <div class="att-table-card">
+    <table class="att-table">
       <thead>
-        <tr style="background-color: #f3f4f6;">
-          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Check In</th>
-          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Check Out</th>
-          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Work Hours</th>
-          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">OT Hours</th>
-          <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
+        <tr>
+          <th>Check In</th>
+          <th>Check Out</th>
+          <th>Work Hours</th>
+          <th>OT Hours</th>
+          <th>Actions</th>
         </tr>
       </thead>
-
       <tbody>
         <% if @attendances.any? %>
           <% @attendances.order(check_in: :desc).each do |attendance| %>
             <tr>
-
-              <td style="padding: 12px; border: 1px solid #ddd;">
-                <%= attendance.check_in&.strftime("%d/%m/%Y %H:%M") %>
+              <td>
+                <div class="dt-cell">
+                  <span class="dt-date"><%= attendance.check_in&.strftime("%d/%m/%Y") %></span>
+                  <span class="dt-time"><%= attendance.check_in&.strftime("%H:%M") %></span>
+                </div>
               </td>
-
-              <td style="padding: 12px; border: 1px solid #ddd;">
-                <%= attendance.check_out&.strftime("%d/%m/%Y %H:%M") %>
+              <td>
+                <div class="dt-cell">
+                  <span class="dt-date"><%= attendance.check_out&.strftime("%d/%m/%Y") %></span>
+                  <span class="dt-time"><%= attendance.check_out&.strftime("%H:%M") %></span>
+                </div>
               </td>
-
-              <td style="padding: 12px; border: 1px solid #ddd;">
-                <%= attendance.work_hours %> hours
+              <td>
+                <div class="hr-cell work">
+                  <span class="hr-num"><%= attendance.work_hours %></span>
+                  <span class="hr-unit">hrs</span>
+                </div>
               </td>
-
-              <td style="padding: 12px; border: 1px solid #ddd;">
-                <%= attendance.ot_hours %> hours
+              <td>
+                <% ot_val = attendance.ot_hours.to_f %>
+                <div class="hr-cell <%= ot_val > 0 ? 'ot' : 'ot-zero' %>">
+                  <span class="hr-num"><%= attendance.ot_hours %></span>
+                  <span class="hr-unit">hrs</span>
+                </div>
               </td>
-
-              <td style="padding: 12px; border: 1px solid #ddd;">
-
-                <%= link_to "Show",
-                    employee_attendance_path(@employee, attendance),
-                    style: "color: #2563eb; text-decoration: none; margin-right: 10px;" %>
-
-                <%= link_to "Edit",
-                    edit_employee_attendance_path(@employee, attendance),
-                    style: "color: #d97706; text-decoration: none; margin-right: 10px;" %>
-
-                <%= link_to "Delete",
-                    employee_attendance_path(@employee, attendance),
-                    data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
-                    style: "color: #dc2626; text-decoration: none;" %>
-
+              <td>
+                <div class="act-row">
+                  <%= link_to "Show", employee_attendance_path(@employee, attendance), class: "act-btn act-show" %>
+                  <%= link_to "Edit", edit_employee_attendance_path(@employee, attendance), class: "act-btn act-edit" %>
+                  <%= link_to "Delete", employee_attendance_path(@employee, attendance),
+                      data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+                      class: "act-btn act-del" %>
+                </div>
               </td>
-
             </tr>
           <% end %>
         <% else %>
-
           <tr>
-            <td colspan="5" style="padding: 16px; border: 1px solid #ddd; text-align: center; color: #6b7280;">
-              No attendance records yet
+            <td colspan="5">
+              <div class="att-empty">
+                <div class="icon">📋</div>
+                <p>No attendance records yet</p>
+              </div>
             </td>
           </tr>
-
         <% end %>
       </tbody>
-
     </table>
   </div>
 
-  <div class="mt-4">
-    <%= link_to "Back to Employee",
-        employee_path(@employee),
-        class: "text-gray-700 underline" %>
+  <div class="att-footer">
+    <%= link_to employee_path(@employee), class: "att-btn-back" do %>← Back to Employee<% end %>
   </div>
 
+</div>
 </div>

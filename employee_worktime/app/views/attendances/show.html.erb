@@ -1,14 +1,133 @@
-<div class="max-w-3xl mx-auto p-6">
-  <h1 class="text-2xl font-bold mb-4">Attendance Detail</h1>
+<% content_for :title, "Attendance Detail" %>
 
-  <p><strong>Employee:</strong> <%= @employee.name %></p>
-  <p><strong>Check in:</strong> <%= @attendance.check_in %></p>
-  <p><strong>Check out:</strong> <%= @attendance.check_out %></p>
-  <p><strong>Work Hours:</strong> <%= @attendance.work_hours %></p>
-  <p><strong>OT Hours:</strong> <%= @attendance.ot_hours %></p>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#080b10;--panel:#0f1318;--panel2:#141920;
+  --border:#1f2733;--border2:#253040;
+  --accent:#00d4aa;--accent-dim:rgba(0,212,170,.12);
+  --blue:#4f8ef7;--blue-dim:rgba(79,142,247,.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,.12);
+  --text:#dfe6f0;--muted:#576578;--white:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.as-wrap{
+  font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;justify-content:center;align-items:flex-start;
+  padding:48px 20px 80px;position:relative;
+}
+.as-wrap::before,.as-wrap::after{content:'';position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;}
+.as-wrap::before{width:500px;height:500px;background:rgba(0,212,170,.055);top:-100px;right:-120px;}
+.as-wrap::after{width:380px;height:380px;background:rgba(79,142,247,.05);bottom:60px;left:-80px;}
+.as-page{position:relative;z-index:1;width:100%;max-width:560px;}
 
-  <div class="mt-4 space-x-3">
-    <%= link_to "Edit", edit_employee_attendance_path(@employee, @attendance), class: "text-yellow-600" %>
-    <%= link_to "Back", employee_attendances_path(@employee), class: "text-blue-600" %>
+.as-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:32px;transition:color .2s;animation:as-down .4s ease both;}
+.as-back:hover{color:var(--text)}
+.as-eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px;animation:as-down .4s .05s ease both;}
+.as-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);}
+.as-title{font-size:32px;font-weight:700;color:var(--white);letter-spacing:-.5px;margin-bottom:4px;animation:as-down .4s .08s ease both;}
+.as-sub{font-size:14px;color:var(--muted);margin-bottom:36px;animation:as-down .4s .12s ease both;}
+
+/* card */
+.as-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;overflow:hidden;animation:as-up .5s .15s ease both;position:relative;}
+.as-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 55%);pointer-events:none;}
+.as-card-header{padding:22px 28px 20px;border-bottom:1px solid var(--border);position:relative;z-index:1;display:flex;align-items:center;gap:12px;}
+.as-card-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-dim);border:1px solid rgba(0,212,170,.2);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.as-card-header h2{font-size:15px;font-weight:600;color:var(--white);}
+.as-card-header p{font-size:12px;color:var(--muted);margin-top:2px;}
+.as-card-body{padding:0;position:relative;z-index:1;}
+
+/* rows */
+.as-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 28px;border-bottom:1px solid var(--border);
+}
+.as-row:last-child{border-bottom:none;}
+.as-row-label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.as-row-val{font-size:14px;font-weight:500;color:var(--text);}
+.as-row-val.mono{font-family:'DM Mono',monospace;font-size:13px;}
+.as-row-val.blue{color:var(--blue);}
+.as-row-val.amber{color:var(--amber);}
+.as-row-val.accent{color:var(--accent);}
+
+/* hour display */
+.as-hr{display:inline-flex;align-items:center;gap:7px;}
+.as-hr .icon{font-size:14px;}
+.as-hr .num{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;}
+.as-hr .unit{font-size:11px;color:var(--muted);}
+
+/* actions */
+.as-actions{display:flex;gap:12px;margin-top:20px;animation:as-up .5s .28s ease both;}
+.as-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-decoration:none;transition:transform .15s,box-shadow .15s;}
+.as-btn:hover{transform:translateY(-1px);}
+.as-btn-edit{background:var(--amber);color:#fff;box-shadow:0 4px 14px rgba(245,158,11,.22);flex:1;}
+.as-btn-edit:hover{box-shadow:0 6px 22px rgba(245,158,11,.35);}
+.as-btn-back{background:var(--panel2);color:var(--text);border:1px solid var(--border2);flex:1;}
+.as-btn-back:hover{background:var(--border2);}
+
+@keyframes as-down{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes as-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<div class="as-wrap">
+<div class="as-page">
+
+  <%= link_to employee_attendances_path(@employee), class: "as-back" do %>← Back to Attendances<% end %>
+
+  <div class="as-eyebrow"><span class="dot"></span>Attendance Records</div>
+  <h1 class="as-title">Attendance Detail</h1>
+  <p class="as-sub"><%= @employee.name %></p>
+
+  <div class="as-card">
+    <div class="as-card-header">
+      <div class="as-card-icon">📋</div>
+      <div>
+        <h2>Record Summary</h2>
+        <p><%= @attendance.check_in&.strftime("%d %B %Y") %></p>
+      </div>
+    </div>
+    <div class="as-card-body">
+
+      <div class="as-row">
+        <span class="as-row-label">Employee</span>
+        <span class="as-row-val"><%= @employee.name %></span>
+      </div>
+
+      <div class="as-row">
+        <span class="as-row-label">Check In</span>
+        <span class="as-row-val mono"><%= @attendance.check_in&.strftime("%d/%m/%Y  %H:%M") %></span>
+      </div>
+
+      <div class="as-row">
+        <span class="as-row-label">Check Out</span>
+        <span class="as-row-val mono"><%= @attendance.check_out&.strftime("%d/%m/%Y  %H:%M") %></span>
+      </div>
+
+      <div class="as-row">
+        <span class="as-row-label">Work Hours</span>
+        <div class="as-hr blue">
+
+          <span class="num"><%= @attendance.work_hours %></span>
+          <span class="unit">hrs</span>
+        </div>
+      </div>
+
+      <div class="as-row">
+        <span class="as-row-label">OT Hours</span>
+        <% ot = @attendance.ot_hours.to_f %>
+        <div class="as-hr <%= ot > 0 ? 'amber' : '' %>">
+          <span class="num" style="color:<%= ot > 0 ? 'var(--amber)' : 'var(--muted)' %>"><%= @attendance.ot_hours %></span>
+          <span class="unit">hrs</span>
+        </div>
+      </div>
+
+    </div>
   </div>
+
+  <div class="as-actions">
+    <%= link_to "✏️  Edit", edit_employee_attendance_path(@employee, @attendance), class: "as-btn as-btn-edit" %>
+    <%= link_to "← Back", employee_attendances_path(@employee), class: "as-btn as-btn-back" %>
+  </div>
+
+</div>
 </div>

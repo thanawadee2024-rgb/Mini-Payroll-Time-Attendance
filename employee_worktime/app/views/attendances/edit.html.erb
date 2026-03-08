@@ -1,7 +1,112 @@
-<h1>Edit Attendance</h1>
+<% content_for :title, "Edit Attendance" %>
 
-<%= render "form" %>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#080b10;--panel:#0f1318;--panel2:#141920;
+  --border:#1f2733;--border2:#253040;
+  --accent:#00d4aa;--accent-dim:rgba(0,212,170,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.08);
+  --text:#dfe6f0;--muted:#576578;--white:#fff;
+  --input-bg:#0c1017;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.na-wrap{
+  font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;justify-content:center;align-items:flex-start;
+  padding:48px 20px 80px;position:relative;
+}
+.na-wrap::before,.na-wrap::after{content:'';position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;}
+.na-wrap::before{width:500px;height:500px;background:rgba(0,212,170,.055);top:-100px;right:-120px;}
+.na-wrap::after{width:380px;height:380px;background:rgba(79,142,247,.05);bottom:60px;left:-80px;}
+.na-page{position:relative;z-index:1;width:100%;max-width:560px;}
+.na-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:32px;transition:color .2s;animation:na-down .4s ease both;}
+.na-back:hover{color:var(--text)}
+.na-eyebrow{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:8px;animation:na-down .4s .05s ease both;}
+.na-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);}
+.na-title{font-size:32px;font-weight:700;color:var(--white);letter-spacing:-.5px;line-height:1.1;margin-bottom:4px;animation:na-down .4s .08s ease both;}
+.na-title span{color:var(--accent);}
+.na-sub{font-size:14px;color:var(--muted);margin-bottom:36px;animation:na-down .4s .12s ease both;}
+.na-card{background:var(--panel);border:1px solid var(--border);border-radius:20px;overflow:hidden;animation:na-up .5s .15s ease both;position:relative;}
+.na-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 55%);pointer-events:none;}
+.na-card-header{padding:22px 28px 20px;border-bottom:1px solid var(--border);position:relative;z-index:1;display:flex;align-items:center;gap:12px;}
+.na-card-icon{width:36px;height:36px;border-radius:10px;background:var(--accent-dim);border:1px solid rgba(0,212,170,.2);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.na-card-header h2{font-size:15px;font-weight:600;color:var(--white);}
+.na-card-header p{font-size:12px;color:var(--muted);margin-top:2px;}
+.na-card-body{padding:28px;position:relative;z-index:1;}
+.af-errors{background:var(--red-dim);border:1px solid rgba(248,113,113,.25);border-radius:14px;padding:18px 22px;margin-bottom:24px;}
+.af-errors h2{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;}
+.af-errors ul{padding-left:18px;}
+.af-errors li{font-size:13px;color:#fca5a5;margin-bottom:4px;line-height:1.5;}
+.af-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.af-field{display:flex;flex-direction:column;gap:7px;}
+.af-field label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.af-field input{
+  background:var(--input-bg);border:1px solid var(--border2);border-radius:10px;
+  padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  outline:none;width:100%;transition:border-color .2s,box-shadow .2s;color-scheme:dark;
+}
+.af-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.12);}
+.af-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px;padding-top:8px;}
+.af-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none;transition:transform .15s,box-shadow .15s;}
+.af-btn:hover{transform:translateY(-1px);}
+.af-btn-cancel{background:var(--panel2);color:var(--muted);border:1px solid var(--border2);}
+.af-btn-cancel:hover{background:var(--border2);color:var(--text);}
+.af-btn-save{background:var(--accent);color:#030f0c;box-shadow:0 4px 14px rgba(0,212,170,.22);}
+.af-btn-save:hover{box-shadow:0 6px 22px rgba(0,212,170,.35);}
+@keyframes na-down{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes na-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
 
-<br>
+<div class="na-wrap">
+<div class="na-page">
 
-<%= link_to "Back", employee_attendances_path(@employee) %>
+  <%= link_to employee_attendances_path(@employee), class: "na-back" do %>← Back to Attendances<% end %>
+
+  <div class="na-eyebrow"><span class="dot"></span>Attendance Records</div>
+  <h1 class="na-title">Edit Attendance <span>/ <%= @employee.name %></span></h1>
+  <p class="na-sub">Update the check-in and check-out times below.</p>
+
+  <div class="na-card">
+    <div class="na-card-header">
+      <div class="na-card-icon">✏️</div>
+      <div>
+        <h2>Attendance Details</h2>
+        <p><%= @attendance.check_in&.strftime("%d %B %Y") %></p>
+      </div>
+    </div>
+    <div class="na-card-body">
+
+      <% if @attendance.errors.any? %>
+        <div class="af-errors">
+          <h2>⚠ <%= pluralize(@attendance.errors.count, "error") %> prevented this from saving</h2>
+          <ul>
+            <% @attendance.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= form_with(model: [@employee, @attendance]) do |form| %>
+        <div class="af-grid">
+          <div class="af-field">
+            <%= form.label :check_in, "Check In" %>
+            <%= form.datetime_local_field :check_in %>
+          </div>
+          <div class="af-field">
+            <%= form.label :check_out, "Check Out" %>
+            <%= form.datetime_local_field :check_out %>
+          </div>
+          <div class="af-actions">
+            <%= link_to "Cancel", employee_attendances_path(@employee), class: "af-btn af-btn-cancel" %>
+            <%= form.submit "Save Changes", class: "af-btn af-btn-save" %>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+
+</div>
+</div>

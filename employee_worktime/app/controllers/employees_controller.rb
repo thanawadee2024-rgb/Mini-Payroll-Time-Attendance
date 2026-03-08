@@ -2,7 +2,32 @@ class EmployeesController < ApplicationController
   before_action :set_employee, only: %i[ show edit update destroy ]
 
   def index
-    @employees = Employee.all
+    search_term = params[:search]&.strip
+    
+    if search_term.present?
+      # Clean search term - remove currency symbol and spaces
+      clean_term = search_term.gsub("฿", "").gsub(",", "").strip
+      
+      # Try to parse as number for base_salary search
+      salary_search = clean_term.to_f if clean_term.match?(/^[\d.]+$/)
+      
+      conditions = ["name ILIKE ? OR position ILIKE ?", "%#{search_term}%", "%#{search_term}%"]
+      
+      if salary_search && salary_search > 0
+        # Use range for partial match - e.g., "5" matches 5000, 50000 etc.
+        min_salary = salary_search
+        max_salary = salary_search * 10 - 1
+        conditions[0] += " OR (base_salary >= ? AND base_salary <= ?)"
+        conditions << min_salary << max_salary
+      end
+      
+      @employees = Employee.where(conditions)
+      @search_performed = true
+      @search_term = search_term
+    else
+      @employees = Employee.all
+      @search_performed = false
+    end
 
     respond_to do |format|
       format.html

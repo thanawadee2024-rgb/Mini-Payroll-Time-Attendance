@@ -1,59 +1,93 @@
 <%= form_with(model: employee) do |form| %>
 
-  <% if employee.errors.any? %>
-    <div style="background:#fee2e2;border:1px solid #fecaca;padding:16px;border-radius:10px;margin-bottom:20px;">
-      <h2 style="color:#b91c1c;font-weight:bold;margin-bottom:8px;">
-        <%= pluralize(employee.errors.count, "error") %> prohibited this employee from being saved
-      </h2>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#080b10;--panel:#0f1318;--panel2:#141920;
+  --border:#1f2733;--border2:#253040;
+  --accent:#00d4aa;--accent-dim:rgba(0,212,170,.12);
+  --red:#f87171;--red-dim:rgba(248,113,113,.08);
+  --text:#dfe6f0;--muted:#576578;--white:#fff;
+  --input-bg:#0c1017;
+}
+.ef-errors{
+  background:var(--red-dim);border:1px solid rgba(248,113,113,.25);
+  border-radius:14px;padding:18px 22px;margin-bottom:24px;
+}
+.ef-errors h2{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px;}
+.ef-errors ul{padding-left:18px;}
+.ef-errors li{font-size:13px;color:#fca5a5;margin-bottom:4px;line-height:1.5;}
+.ef-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.ef-field{display:flex;flex-direction:column;gap:7px;}
+.ef-field.full{grid-column:1/-1;}
+.ef-field label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.ef-field input{
+  background:var(--input-bg);border:1px solid var(--border2);border-radius:10px;
+  padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  outline:none;width:100%;transition:border-color .2s,box-shadow .2s;
+}
+.ef-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.12);}
+.ef-field input::placeholder{color:var(--muted);}
+.ef-prefix-wrap{position:relative;}
+.ef-prefix-wrap .ef-sym{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);pointer-events:none;
+}
+.ef-prefix-wrap input{padding-left:34px;}
+.ef-divider{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0;}
+.ef-actions{
+  grid-column:1/-1;display:flex;align-items:center;
+  justify-content:flex-end;gap:10px;padding-top:8px;
+}
+.ef-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none;
+  transition:transform .15s,box-shadow .15s;
+}
+.ef-btn:hover{transform:translateY(-1px);}
+.ef-btn-cancel{background:var(--panel2);color:var(--muted);border:1px solid var(--border2);}
+.ef-btn-cancel:hover{background:var(--border2);color:var(--text);}
+.ef-btn-save{background:var(--accent);color:#030f0c;box-shadow:0 4px 14px rgba(0,212,170,.22);}
+.ef-btn-save:hover{box-shadow:0 6px 22px rgba(0,212,170,.35);}
+</style>
 
-      <ul style="color:#dc2626;padding-left:18px;">
-        <% employee.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div style="max-width:600px;background:white;border:1px solid #e5e7eb;border-radius:12px;padding:30px;box-shadow:0 4px 12px rgba(0,0,0,0.05);">
-
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-weight:600;margin-bottom:6px;">Name</label>
-      <%= form.text_field :name,
-        placeholder: "Enter employee name",
-        style: "width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;" %>
-    </div>
-
-    <div style="margin-bottom:20px;">
-      <label style="display:block;font-weight:600;margin-bottom:6px;">Position</label>
-      <%= form.text_field :position,
-        placeholder: "Developer / Designer / HR",
-        style: "width:100%;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;" %>
-    </div>
-
-    <div style="margin-bottom:25px;">
-      <label style="display:block;font-weight:600;margin-bottom:6px;">Base Salary</label>
-
-      <div style="display:flex;align-items:center;">
-        <span style="background:#f3f4f6;border:1px solid #d1d5db;padding:12px;border-right:none;border-radius:8px 0 0 8px;">฿</span>
-
-        <%= form.number_field :base_salary,
-          step: 0.01,
-          placeholder: "0.00",
-          style: "flex:1;padding:12px;border:1px solid #d1d5db;border-radius:0 8px 8px 0;font-size:14px;" %>
-      </div>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
-
-      <%= link_to "Cancel",
-          employees_path,
-          style: "padding:10px 16px;border:1px solid #d1d5db;border-radius:8px;text-decoration:none;color:#374151;background:#f9fafb;" %>
-
-      <%= form.submit "Save",
-          style: "padding:10px 18px;background:#16a34a;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;" %>
-
-    </div>
-
+<% if employee.errors.any? %>
+  <div class="ef-errors">
+    <h2>⚠ <%= pluralize(employee.errors.count, "error") %> prevented this from saving</h2>
+    <ul>
+      <% employee.errors.each do |error| %>
+        <li><%= error.full_message %></li>
+      <% end %>
+    </ul>
   </div>
+<% end %>
+
+<div class="ef-grid">
+  <div class="ef-field full">
+    <%= form.label :name %>
+    <%= form.text_field :name, placeholder: "Full name" %>
+  </div>
+
+  <div class="ef-divider"></div>
+
+  <div class="ef-field">
+    <%= form.label :position %>
+    <%= form.text_field :position, placeholder: "e.g. Software Engineer" %>
+  </div>
+
+  <div class="ef-field">
+    <%= form.label :base_salary %>
+    <div class="ef-prefix-wrap">
+      <span class="ef-sym">฿</span>
+      <%= form.number_field :base_salary, step: 0.01, placeholder: "0.00" %>
+    </div>
+  </div>
+
+  <div class="ef-actions">
+    <%= link_to "Cancel", employees_path, class: "ef-btn ef-btn-cancel" %>
+    <%= form.submit "Save", class: "ef-btn ef-btn-save" %>
+  </div>
+</div>
 
 <% end %>

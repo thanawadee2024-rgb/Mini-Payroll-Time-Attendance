@@ -1,12 +1,193 @@
-<% content_for :title, "Editing employee" %>
+<% content_for :title, "Editing Employee" %>
 
-<h1>Editing employee</h1>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-<%= render "form", employee: @employee %>
+:root{
+  --bg:#080b10;--panel:#0f1318;--panel2:#141920;
+  --border:#1f2733;--border2:#253040;
+  --accent:#00d4aa;--accent-dim:rgba(0,212,170,.12);
+  --amber:#f59e0b;--red:#f87171;
+  --text:#dfe6f0;--muted:#576578;--white:#fff;
+  --input-bg:#0c1017;
+}
+*{box-sizing:border-box;margin:0;padding:0}
 
-<br>
+.ee-wrap{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;display:flex;
+  justify-content:center;align-items:flex-start;
+  padding:48px 20px 80px;
+  position:relative;
+}
+.ee-wrap::before,.ee-wrap::after{
+  content:'';position:fixed;border-radius:50%;
+  filter:blur(130px);pointer-events:none;z-index:0;
+}
+.ee-wrap::before{width:500px;height:500px;background:rgba(0,212,170,.055);top:-100px;right:-120px;}
+.ee-wrap::after{width:380px;height:380px;background:rgba(245,158,11,.04);bottom:60px;left:-80px;}
 
-<div>
-  <%= link_to "Show this employee", @employee %> |
-  <%= link_to "Back to employees", employees_path %>
+.ee-page{position:relative;z-index:1;width:100%;max-width:680px;}
+
+.ee-back{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--muted);text-decoration:none;
+  margin-bottom:32px;transition:color .2s;
+  animation:ee-fadeDown .4s ease both;
+}
+.ee-back:hover{color:var(--text)}
+
+.ee-eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:8px;animation:ee-fadeDown .4s .05s ease both;
+  display:flex;align-items:center;gap:8px;
+}
+.ee-eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 7px var(--accent);}
+.ee-title{
+  font-size:34px;font-weight:700;color:var(--white);
+  letter-spacing:-.5px;line-height:1.1;
+  margin-bottom:36px;animation:ee-fadeDown .4s .1s ease both;
+}
+
+.ee-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:20px;overflow:hidden;
+  animation:ee-fadeUp .5s .15s ease both;
+  position:relative;
+}
+.ee-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.02) 0%,transparent 55%);
+  pointer-events:none;z-index:0;
+}
+.ee-card-header{
+  padding:22px 28px 20px;
+  border-bottom:1px solid var(--border);
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:12px;
+}
+.ee-card-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--accent-dim);border:1px solid rgba(0,212,170,.2);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.ee-card-header h2{font-size:15px;font-weight:600;color:var(--white);}
+.ee-card-header p{font-size:12px;color:var(--muted);margin-top:2px;}
+
+.ee-card-body{padding:28px;position:relative;z-index:1;}
+
+/* form styles — scoped to ee- */
+.ee-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.ee-field{display:flex;flex-direction:column;gap:7px;}
+.ee-field.full{grid-column:1/-1;}
+.ee-field label{
+  font-size:11px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);display:block;
+}
+.ee-field input,.ee-field select{
+  background:var(--input-bg);border:1px solid var(--border2);
+  border-radius:10px;padding:11px 14px;
+  font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  outline:none;width:100%;
+  transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none;
+}
+.ee-field input:focus,.ee-field select:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,212,170,.12);
+}
+.ee-field input::placeholder{color:var(--muted)}
+.ee-prefix{position:relative;}
+.ee-prefix span{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);pointer-events:none;
+}
+.ee-prefix input{padding-left:36px;}
+.ee-divider{grid-column:1/-1;height:1px;background:var(--border);margin:4px 0;}
+
+.ee-actions{
+  display:flex;gap:12px;margin-top:28px;
+  animation:ee-fadeUp .5s .3s ease both;
+}
+.ee-btn{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px 20px;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:transform .15s,box-shadow .2s;
+}
+.ee-btn:hover{transform:translateY(-2px)}
+.ee-btn-save{
+  background:var(--accent);color:#030f0c;
+  box-shadow:0 4px 16px rgba(0,212,170,.25);
+}
+.ee-btn-save:hover{box-shadow:0 6px 24px rgba(0,212,170,.38)}
+.ee-btn-cancel{
+  background:var(--panel2);color:var(--text);
+  border:1px solid var(--border2);flex:0 0 auto;padding:13px 24px;
+}
+.ee-btn-cancel:hover{background:var(--border2)}
+
+.ee-danger{
+  margin-top:20px;
+  border:1px solid rgba(248,113,113,.15);
+  border-radius:16px;padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  animation:ee-fadeUp .5s .35s ease both;
+  background:rgba(248,113,113,.03);
+}
+.ee-danger p{font-size:13px;color:var(--muted);}
+.ee-danger strong{display:block;font-size:14px;font-weight:600;color:#fca5a5;margin-bottom:3px;}
+.ee-btn-delete{
+  background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);
+  color:var(--red);padding:9px 18px;border-radius:9px;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .2s,transform .15s;white-space:nowrap;
+}
+.ee-btn-delete:hover{background:rgba(248,113,113,.2);transform:scale(1.02)}
+
+@keyframes ee-fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ee-fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<div class="ee-wrap">
+<div class="ee-page">
+
+  <%= link_to employees_path, class: "ee-back" do %>← Back to Employees<% end %>
+
+  <div class="ee-eyebrow"><span class="dot"></span>Employee Management</div>
+  <h1 class="ee-title">Edit Employee</h1>
+
+  <div class="ee-card">
+    <div class="ee-card-header">
+      <div class="ee-card-icon">👤</div>
+      <div>
+        <h2>Employee Information</h2>
+        <p>Update the fields below and save your changes.</p>
+      </div>
+    </div>
+    <div class="ee-card-body">
+      <%= render "form", employee: @employee %>
+    </div>
+  </div>
+
+  <%# Actions — put these inside your _form partial's submit, or here %>
+  <div class="ee-actions">
+    <%= link_to employees_path, class: "ee-btn ee-btn-cancel" do %>Cancel<% end %>
+  </div>
+
+  <%# Danger zone %>
+  <div class="ee-danger">
+    <div>
+      <strong>Delete Employee</strong>
+      <p>This action is permanent and cannot be undone.</p>
+    </div>
+    <%= button_to "🗑 Delete", employee_path(@employee),
+        method: :delete,
+        class: "ee-btn-delete",
+        data: { confirm: "Are you sure you want to delete #{@employee.name}?" } %>
+  </div>
+
+</div>
 </div>

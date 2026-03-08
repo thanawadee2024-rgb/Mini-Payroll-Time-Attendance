@@ -1,36 +1,379 @@
 <p style="color: green"><%= notice %></p>
 
-<h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">Employee</h1>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-<div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
-  <%= link_to "New Employee", new_employee_path, 
-      style: "padding: 10px 16px; background: #16a34a; color: white; text-decoration: none; border-radius: 8px; font-weight: 500;" %>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #252a38;
+    --accent: #4f8ef7;
+    --accent2: #7c5cfc;
+    --green: #22c55e;
+    --text: #e8ecf5;
+    --muted: #6b7491;
+    --danger: #f87171;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 40px 48px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 36px;
+    animation: fadeDown .5s ease both;
+  }
+
+  .page-header__left h1 {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .page-header__left h2 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.15;
+  }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    animation: fadeDown .5s .1s ease both;
+  }
+
+  .search-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .search-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,142,247,.15);
+  }
+
+  .search-wrap input[type="text"] {
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 10px 16px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    width: 240px;
+  }
+
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-wrap button {
+    background: var(--accent);
+    border: none;
+    padding: 10px 18px;
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+  }
+
+  .search-wrap button:hover { background: #3a7de8; }
+
+  .btn-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--green), #16a34a);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform .15s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(34,197,94,.25);
+  }
+
+  .btn-new:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(34,197,94,.35);
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    animation: fadeUp .55s .2s ease both;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 14px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .18s;
+    animation: rowIn .4s ease both;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--surface2); }
+
+  td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  /* avatar chip */
+  .name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(79,142,247,.12);
+    color: var(--accent);
+    border: 1px solid rgba(79,142,247,.2);
+  }
+
+  .salary {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+  }
+
+  .link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+
+  .link-btn--info {
+    color: var(--accent);
+    background: rgba(79,142,247,.1);
+  }
+
+  .link-btn--info:hover { background: rgba(79,142,247,.22); }
+
+  .link-btn--attend {
+    color: #a78bfa;
+    background: rgba(124,92,252,.1);
+  }
+
+  .link-btn--attend:hover { background: rgba(124,92,252,.22); }
+
+  /* ── Modal ── */
+  #alertModal {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.6);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    animation: fadeIn .2s ease;
+  }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 40px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,.5);
+    max-width: 340px;
+    animation: scaleIn .25s ease;
+  }
+
+  .modal-box .icon { font-size: 52px; margin-bottom: 14px; }
+  .modal-box h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .modal-box p  { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+
+  .modal-box button {
+    padding: 11px 32px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+  }
+
+  .modal-box button:hover { background: #3a7de8; transform: scale(1.03); }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from { opacity:0; transform:translateY(-14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes rowIn {
+    from { opacity:0; transform:translateX(-8px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity:0; } to { opacity:1; }
+  }
+  @keyframes scaleIn {
+    from { opacity:0; transform:scale(.88); }
+    to   { opacity:1; transform:scale(1); }
+  }
+
+  /* stagger rows */
+  tbody tr:nth-child(1) { animation-delay:.05s }
+  tbody tr:nth-child(2) { animation-delay:.10s }
+  tbody tr:nth-child(3) { animation-delay:.15s }
+  tbody tr:nth-child(4) { animation-delay:.20s }
+  tbody tr:nth-child(5) { animation-delay:.25s }
+</style>
+
+<%# ─── Page Header ─── %>
+<div class="page-header">
+  <div class="page-header__left">
+    <h1>Hello, User 👋</h1>
+    <h2>Employee Directory</h2>
+  </div>
+
+  <%# ─── Toolbar ─── %>
+  <div class="toolbar">
+    <%= form_with url: employees_path, method: :get, local: true do |f| %>
+      <div class="search-wrap">
+        <%= text_field_tag :search, params[:search], placeholder: "Search employee…" %>
+        <%= submit_tag "Search" %>
+      </div>
+    <% end %>
+    <%= link_to new_employee_path, class: "btn-new" do %>
+      ＋ New Employee
+    <% end %>
+  </div>
 </div>
 
-<table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
-  <thead>
-    <tr style="background-color: #f3f4f6;">
-      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Name</th>
-      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Position</th>
-      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Base Salary</th>
-      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
-      <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Action</th>
-    </tr>
-  </thead>
+<%# ─── No-results modal ─── %>
+<% if @search_performed && @employees.empty? %>
+  <div id="alertModal" style="display:none;">
+    <div class="modal-box">
+      <div class="icon">🔍</div>
+      <h3>No Results Found</h3>
+      <p>We couldn't find any employee matching your search.</p>
+      <button onclick="document.getElementById('alertModal').style.display='none'">OK</button>
+    </div>
+  </div>
+  <script>document.getElementById('alertModal').style.display='flex';</script>
+<% end %>
 
-  <tbody>
-    <% @employees.each do |employee| %>
+<%# ─── Table ─── %>
+<div class="table-wrap">
+  <table>
+    <thead>
       <tr>
-        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.name %></td>
-        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.position %></td>
-        <td style="padding: 12px; border: 1px solid #ddd;"><%= employee.base_salary %></td>
-        <td style="padding: 12px; border: 1px solid #ddd;">
-          <%= link_to "Information", employee_path(employee), style: "color: #2563eb; text-decoration: none; font-weight: 500;" %>
-        </td>
-        <td style="padding: 12px; border: 1px solid #ddd;">
-          <%= link_to "View Attendances", employee_attendances_path(employee), style: "color: #2563eb; text-decoration: none; font-weight: 500;" %>
-        </td>
+        <th>Name</th>
+        <th>Position</th>
+        <th>Base Salary</th>
+        <th>Info</th>
+        <th>Attendance</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @employees.each do |employee| %>
+        <%
+          colors  = %w[#4f8ef7 #7c5cfc #22c55e #f59e0b #ec4899 #14b8a6]
+          color   = colors[employee.id % colors.size]
+          initials = employee.name.split.map(&:first).first(2).join.upcase
+        %>
+        <tr>
+          <td>
+            <div class="name-cell">
+              <div class="avatar" style="background:<%= color %>20; border:1px solid <%= color %>40; color:<%= color %>;">
+                <%= initials %>
+              </div>
+              <span><%= employee.name %></span>
+            </div>
+          </td>
+          <td><span class="badge"><%= employee.position %></span></td>
+          <td><span class="salary"><%= number_to_currency(employee.base_salary, unit: "฿", format: "%n %u") %></span></td>
+          <td>
+            <%= link_to "ℹ Information", employee_path(employee), class: "link-btn link-btn--info" %>
+          </td>
+          <td>
+            <%= link_to "📅 Attendances", employee_attendances_path(employee), class: "link-btn link-btn--attend" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
